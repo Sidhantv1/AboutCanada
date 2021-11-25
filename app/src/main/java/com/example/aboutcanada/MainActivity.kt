@@ -1,6 +1,7 @@
 package com.example.aboutcanada
 
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -29,12 +30,30 @@ class MainActivity : AppCompatActivity() {
         activityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         initViewModel()
         initRecyclerView()
-        if (mainViewModel.isNetworkAvailable(this))
+        loadApi()
+        setObserver()
+        setSwipeRefreshListener()
+    }
+
+    private fun setSwipeRefreshListener() {
+        activityMainBinding.swipeContainer.setOnRefreshListener {
+            loadApi()
+        }
+        // Configure the refreshing colors
+        activityMainBinding.swipeContainer.setColorSchemeResources(
+            android.R.color.holo_blue_bright,
+            android.R.color.holo_green_light,
+            android.R.color.holo_orange_light,
+            android.R.color.holo_red_light
+        )
+    }
+
+    private fun loadApi() {
+        if (mainViewModel.isNetworkAvailable(this)) {
             mainViewModel.loadFactsApi()
-        else
+        } else
             Toast.makeText(this, getString(R.string.no_internet_connection), Toast.LENGTH_SHORT)
                 .show()
-        setObserver()
     }
 
     private fun initViewModel() {
@@ -50,6 +69,8 @@ class MainActivity : AppCompatActivity() {
                 if (row.title?.isNotEmpty() == true || row.description?.isNotEmpty() == true || row.imageHref?.isNotEmpty() == true)
                     arrayList.add(row)
             }
+            activityMainBinding.progressBar.visibility = View.GONE
+            activityMainBinding.swipeContainer.isRefreshing = false
             adapter.setData(arrayList)
         }
     }

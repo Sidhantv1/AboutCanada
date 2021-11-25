@@ -1,17 +1,13 @@
 package com.example.aboutcanada
 
-import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import com.example.aboutcanada.dataclass.CountryDataClass
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.io.IOException
 
 class MainRepository {
 
