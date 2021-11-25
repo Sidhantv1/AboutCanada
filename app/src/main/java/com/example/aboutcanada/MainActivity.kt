@@ -1,6 +1,7 @@
 package com.example.aboutcanada
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
@@ -26,16 +27,26 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         activityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
-        mainViewModel = ViewModelProvider(this).get(MainViewModel::class.java)
+        initViewModel()
         initRecyclerView()
-        mainViewModel.fetchFactsDataFromJson()
+        if (mainViewModel.isNetworkAvailable(this))
+            mainViewModel.loadFactsApi()
+        else
+            Toast.makeText(this, getString(R.string.no_internet_connection), Toast.LENGTH_SHORT)
+                .show()
         setObserver()
     }
 
+    private fun initViewModel() {
+        val mainViewModelFactory = MainViewModelFactory(MainRepository())
+        mainViewModel = ViewModelProvider(this, mainViewModelFactory)[MainViewModel::class.java]
+    }
+
     private fun setObserver() {
-        mainViewModel.countryDataObserver().observe(this) { countryData ->
-            title = countryData.title
-            countryData.rows.forEach { row ->
+        mainViewModel.factsDataObserver().observe(this) { factsData ->
+            arrayList.clear()
+            title = factsData.title
+            factsData.rows.forEach { row ->
                 if (row.title?.isNotEmpty() == true || row.description?.isNotEmpty() == true || row.imageHref?.isNotEmpty() == true)
                     arrayList.add(row)
             }

@@ -1,23 +1,28 @@
 package com.example.aboutcanada
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import android.content.Context
+import android.net.ConnectivityManager
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 
-class MainViewModel(application: Application) : AndroidViewModel(application) {
+class MainViewModel(private val mainRepository: MainRepository) : ViewModel() {
 
-    private val context = application
+    fun factsDataObserver() = mainRepository.countryDataClassLiveData
 
-    private val mainRepository by lazy {
-        MainRepository()
+    fun loadFactsApi() {
+        viewModelScope.launch {
+            mainRepository.loadFactsApi()
+        }
     }
 
-    fun countryDataObserver() = mainRepository.countryDataClassLiveData
-
-    fun fetchFactsDataFromJson() {
-        viewModelScope.launch {
-            mainRepository.parseJSONData(context)
-        }
+    /**
+     * Methods to check if the internet connection is available or not
+     */
+    fun isNetworkAvailable(context: Context): Boolean {
+        val connectivityManager =
+            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        return connectivityManager.activeNetworkInfo != null && connectivityManager.activeNetworkInfo!!
+            .isConnected
     }
 }

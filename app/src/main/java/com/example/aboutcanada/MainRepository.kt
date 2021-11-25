@@ -8,30 +8,34 @@ import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.io.IOException
 
 class MainRepository {
 
     val countryDataClassLiveData: MutableLiveData<CountryDataClass> = MutableLiveData()
 
-    fun parseJSONData(context: Context) {
+    fun loadFactsApi() {
         GlobalScope.launch(Dispatchers.IO) {
-            val jsonFileString = "aboutcanada.json".getJsonDataFromAsset(context)
-            val listPersonType = object : TypeToken<CountryDataClass>() {}.type
-            val countryDataClass: CountryDataClass = Gson().fromJson(jsonFileString, listPersonType)
-            countryDataClassLiveData.postValue(countryDataClass)
+            val api = RetrofitClientInstance.getRetrofitInstance().create(Api::class.java)
+
+            // Api Request parameter passed in query
+            val call = api.getFactsData()
+
+            call.enqueue(object : Callback<CountryDataClass> {
+                // Failure Response
+                override fun onFailure(call: Call<CountryDataClass>, t: Throwable) {}
+
+                // Success Response
+                override fun onResponse(
+                    call: Call<CountryDataClass>,
+                    response: Response<CountryDataClass>
+                ) {
+                    countryDataClassLiveData.value = response.body()
+                }
+            })
         }
     }
-
-    private fun String.getJsonDataFromAsset(context: Context): String? {
-        val jsonString: String
-        try {
-            jsonString = context.assets.open(this).bufferedReader().use { it.readText() }
-        } catch (ioException: IOException) {
-            ioException.printStackTrace()
-            return null
-        }
-        return jsonString
-    }
-
 }
