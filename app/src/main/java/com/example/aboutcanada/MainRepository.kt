@@ -1,7 +1,7 @@
 package com.example.aboutcanada
 
 import androidx.lifecycle.MutableLiveData
-import com.example.aboutcanada.dataclass.CountryDataClass
+import com.example.aboutcanada.dataclass.FactsDataClass
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -11,7 +11,7 @@ import retrofit2.Response
 
 class MainRepository {
 
-    val countryDataClassLiveData: MutableLiveData<CountryDataClass> = MutableLiveData()
+    val factsDataClassLiveData: MutableLiveData<FactsDataClass> = MutableLiveData()
 
     fun loadFactsApi() {
         GlobalScope.launch(Dispatchers.IO) {
@@ -20,16 +20,16 @@ class MainRepository {
             // Api Request parameter passed in query
             val call = api.getFactsData()
 
-            call.enqueue(object : Callback<CountryDataClass> {
+            call.enqueue(object : Callback<FactsDataClass> {
                 // Failure Response
-                override fun onFailure(call: Call<CountryDataClass>, t: Throwable) {}
+                override fun onFailure(call: Call<FactsDataClass>, t: Throwable) {}
 
                 // Success Response
                 override fun onResponse(
-                    call: Call<CountryDataClass>,
-                    response: Response<CountryDataClass>
+                    call: Call<FactsDataClass>,
+                    response: Response<FactsDataClass>
                 ) {
-                    countryDataClassLiveData.value = response.body()
+                    factsDataClassLiveData.value = response.body()
                 }
             })
         }

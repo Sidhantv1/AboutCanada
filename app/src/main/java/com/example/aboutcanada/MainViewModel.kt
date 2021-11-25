@@ -8,7 +8,7 @@ import kotlinx.coroutines.launch
 
 class MainViewModel(private val mainRepository: MainRepository) : ViewModel() {
 
-    fun factsDataObserver() = mainRepository.countryDataClassLiveData
+    fun factsDataObserver() = mainRepository.factsDataClassLiveData
 
     fun loadFactsApi() {
         viewModelScope.launch {

@@ -76,9 +76,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initRecyclerView() {
-        val rv = activityMainBinding.rv
-        rv.layoutManager = LinearLayoutManager(this)
-        rv.adapter = adapter
+        val recyclerView = activityMainBinding.recyclerView
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.setHasFixedSize(true)
+        recyclerView.adapter = adapter
     }
 
 }

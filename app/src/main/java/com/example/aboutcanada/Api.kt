@@ -1,6 +1,6 @@
 package com.example.aboutcanada
 
-import com.example.aboutcanada.dataclass.CountryDataClass
+import com.example.aboutcanada.dataclass.FactsDataClass
 import retrofit2.Call
 import retrofit2.http.GET
 
@@ -10,6 +10,6 @@ import retrofit2.http.GET
 interface Api {
 
     @GET(ApiConstants.GET_DATA)
-    fun getFactsData(): Call<CountryDataClass>
+    fun getFactsData(): Call<FactsDataClass>
 
 }
