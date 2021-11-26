@@ -1,4 +1,4 @@
-package com.example.aboutcanada
+package com.example.aboutcanada.networking
 
 /**
  * Api Constants

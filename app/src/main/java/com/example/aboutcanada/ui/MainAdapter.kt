@@ -1,10 +1,11 @@
-package com.example.aboutcanada
+package com.example.aboutcanada.ui
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.aboutcanada.R
 import com.example.aboutcanada.databinding.ViewItemBinding
 import com.example.aboutcanada.dataclass.Row
 

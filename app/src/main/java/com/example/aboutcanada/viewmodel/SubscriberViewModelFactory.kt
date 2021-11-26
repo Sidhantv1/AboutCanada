@@ -1,7 +1,8 @@
-package com.example.aboutcanada
+package com.example.aboutcanada.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.example.aboutcanada.repository.MainRepository
 
 class MainViewModelFactory(private val repository: MainRepository) : ViewModelProvider.Factory {
 

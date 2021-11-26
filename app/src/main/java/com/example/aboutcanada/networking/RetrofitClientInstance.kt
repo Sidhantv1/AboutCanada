@@ -1,4 +1,4 @@
-package com.example.aboutcanada
+package com.example.aboutcanada.networking
 
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory

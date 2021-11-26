@@ -1,14 +1,19 @@
-package com.example.aboutcanada
+package com.example.aboutcanada.ui
 
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.aboutcanada.R
 import com.example.aboutcanada.databinding.ActivityMainBinding
 import com.example.aboutcanada.dataclass.Row
+import com.example.aboutcanada.networking.DataResult
+import com.example.aboutcanada.repository.MainRepository
+import com.example.aboutcanada.viewmodel.MainViewModel
+import com.example.aboutcanada.viewmodel.MainViewModelFactory
+import es.dmoral.toasty.Toasty
 
 class MainActivity : AppCompatActivity() {
 
@@ -30,14 +35,14 @@ class MainActivity : AppCompatActivity() {
         activityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         initViewModel()
         initRecyclerView()
-        loadApi()
+        loadApi(false)
         setObserver()
         setSwipeRefreshListener()
     }
 
     private fun setSwipeRefreshListener() {
         activityMainBinding.swipeContainer.setOnRefreshListener {
-            loadApi()
+            loadApi(true)
         }
         // Configure the refreshing colors
         activityMainBinding.swipeContainer.setColorSchemeResources(
@@ -48,12 +53,11 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
-    private fun loadApi() {
+    private fun loadApi(isPulledToRefresh: Boolean) {
         if (mainViewModel.isNetworkAvailable(this)) {
-            mainViewModel.loadFactsApi()
+            mainViewModel.getFactsData(isPulledToRefresh)
         } else
-            Toast.makeText(this, getString(R.string.no_internet_connection), Toast.LENGTH_SHORT)
-                .show()
+            Toasty.info(this, getString(R.string.no_internet_connection)).show()
     }
 
     private fun initViewModel() {
@@ -62,16 +66,28 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setObserver() {
-        mainViewModel.factsDataObserver().observe(this) { factsData ->
-            arrayList.clear()
-            title = factsData.title
-            factsData.rows.forEach { row ->
-                if (row.title?.isNotEmpty() == true || row.description?.isNotEmpty() == true || row.imageHref?.isNotEmpty() == true)
-                    arrayList.add(row)
+        mainViewModel.factsDataClassLiveDataResponseModel.observe(this) {
+            when (it) {
+                is DataResult.Loading -> {
+                    activityMainBinding.progressBar.visibility = View.VISIBLE
+                }
+
+                is DataResult.Success -> {
+                    activityMainBinding.progressBar.visibility = View.GONE
+                    arrayList.clear()
+                    title = it.data.title
+                    it.data.rows.forEach { row ->
+                        if (row.title?.isNotEmpty() == true || row.description?.isNotEmpty() == true || row.imageHref?.isNotEmpty() == true)
+                            arrayList.add(row)
+                    }
+                    activityMainBinding.swipeContainer.isRefreshing = false
+                    adapter.setData(arrayList)
+                }
+
+                is DataResult.Failure -> {
+                    Toasty.error(this, getString(R.string.error_message)).show()
+                }
             }
-            activityMainBinding.progressBar.visibility = View.GONE
-            activityMainBinding.swipeContainer.isRefreshing = false
-            adapter.setData(arrayList)
         }
     }
 

@@ -1,6 +1,6 @@
 package com.example.aboutcanada.dataclass
 
-data class FactsDataClass(
+data class FactsDataClassResponseModel(
     val rows: List<Row>,
     val title: String
 )
