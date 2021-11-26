@@ -33,16 +33,17 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         activityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+        activityMainBinding.displayMessage = getString(R.string.no_internet_message)
         initViewModel()
         initRecyclerView()
-        loadApi(false)
+        loadFactsDataApi(false)
         setObserver()
         setSwipeRefreshListener()
     }
 
     private fun setSwipeRefreshListener() {
         activityMainBinding.swipeContainer.setOnRefreshListener {
-            loadApi(true)
+            loadFactsDataApi(true)
         }
         // Configure the refreshing colors
         activityMainBinding.swipeContainer.setColorSchemeResources(
@@ -53,11 +54,18 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
-    private fun loadApi(isPulledToRefresh: Boolean) {
+    private fun loadFactsDataApi(isPulledToRefresh: Boolean) {
         if (mainViewModel.isNetworkAvailable(this)) {
+            activityMainBinding.tvNoInternetMsg.visibility = View.GONE
+            activityMainBinding.recyclerView.visibility = View.VISIBLE
             mainViewModel.getFactsData(isPulledToRefresh)
-        } else
+        } else if (isPulledToRefresh) {
+            activityMainBinding.swipeContainer.isRefreshing = false
             Toasty.info(this, getString(R.string.no_internet_connection)).show()
+        } else {
+            activityMainBinding.tvNoInternetMsg.visibility = View.VISIBLE
+            activityMainBinding.recyclerView.visibility = View.GONE
+        }
     }
 
     private fun initViewModel() {
