@@ -91,6 +91,7 @@ class MainActivity : AppCompatActivity() {
             else -> {
                 activityMainBinding.tvNoInternetMsg.visibility = View.VISIBLE
                 activityMainBinding.recyclerView.visibility = View.GONE
+                activityMainBinding.progressBar.visibility = View.GONE
             }
         }
     }
