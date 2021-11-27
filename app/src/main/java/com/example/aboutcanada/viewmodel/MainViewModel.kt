@@ -14,22 +14,30 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+/**
+ * ViewModel class
+ */
 class MainViewModel(private val mainRepository: MainRepository) : ViewModel() {
 
+    // private live data object for the API Response for viewModel
     private var _factsDataClassLiveDataResponseModel =
         MutableLiveData<DataResult<FactsDataClassResponseModel>>()
 
+    // live data object for the API Response for Activity
     var factsDataClassLiveDataResponseModel: LiveData<DataResult<FactsDataClassResponseModel>> =
         _factsDataClassLiveDataResponseModel
 
+    /**
+     * Methods to call the API and fetch the data to be observed on the Activity
+     */
     fun getFactsData(isPulledToRefresh: Boolean = false): LiveData<DataResult<FactsDataClassResponseModel>> {
 
+        // Doesn't load the API again on orientation change when the livedata is not null
         if (_factsDataClassLiveDataResponseModel.value != null && !isPulledToRefresh) {
             return factsDataClassLiveDataResponseModel
         }
 
         viewModelScope.launch {
-
             val response =
                 mainRepository.getFactsData()
 

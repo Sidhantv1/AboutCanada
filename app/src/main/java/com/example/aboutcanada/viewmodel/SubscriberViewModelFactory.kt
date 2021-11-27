@@ -4,6 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.aboutcanada.repository.MainRepository
 
+/**
+ * ViewModel factory for the MainRepository object created
+ */
 class MainViewModelFactory(private val repository: MainRepository) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

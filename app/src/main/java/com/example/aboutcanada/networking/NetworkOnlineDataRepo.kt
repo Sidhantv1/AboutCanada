@@ -7,6 +7,9 @@ import okhttp3.ResponseBody
 import org.json.JSONObject
 import retrofit2.Response
 
+/**
+ * Class to get the successful and failure API response
+ */
 @ExperimentalCoroutinesApi
 abstract class NetworkOnlineDataRepo<RESULT, REQUEST> {
     fun asFlow() = flow {
@@ -14,7 +17,7 @@ abstract class NetworkOnlineDataRepo<RESULT, REQUEST> {
         try {
             val apiResponse = fetchDataFromRemoteSource()
             val data = apiResponse.body()
-
+            // Success Response Data
             if (apiResponse.isSuccessful && data != null) {
                 emit(DataResult.Success(data))
             } else {
@@ -26,6 +29,9 @@ abstract class NetworkOnlineDataRepo<RESULT, REQUEST> {
 
     }
 
+    /**
+     * Error Response Data
+     */
     private fun getErrorMsg(responseBody: ResponseBody): ArrayList<String> {
 
         val errorArrayList = ArrayList<String>()
