@@ -17,13 +17,15 @@ import es.dmoral.toasty.Toasty
 
 class MainActivity : AppCompatActivity() {
 
-    private val adapter by lazy {
+    private val mainAdapter by lazy {
         MainAdapter()
     }
 
     private val arrayList by lazy {
         ArrayList<Row>()
     }
+
+    var isPulledToLoad: Boolean = false
 
     private lateinit var mainViewModel: MainViewModel
 
@@ -55,16 +57,21 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun loadFactsDataApi(isPulledToRefresh: Boolean) {
-        if (mainViewModel.isNetworkAvailable(this)) {
-            activityMainBinding.tvNoInternetMsg.visibility = View.GONE
-            activityMainBinding.recyclerView.visibility = View.VISIBLE
-            mainViewModel.getFactsData(isPulledToRefresh)
-        } else if (isPulledToRefresh) {
-            activityMainBinding.swipeContainer.isRefreshing = false
-            Toasty.info(this, getString(R.string.no_internet_connection)).show()
-        } else {
-            activityMainBinding.tvNoInternetMsg.visibility = View.VISIBLE
-            activityMainBinding.recyclerView.visibility = View.GONE
+        isPulledToLoad = isPulledToRefresh
+        when {
+            mainViewModel.isNetworkAvailable(this) -> {
+                activityMainBinding.tvNoInternetMsg.visibility = View.GONE
+                activityMainBinding.recyclerView.visibility = View.VISIBLE
+                mainViewModel.getFactsData(isPulledToRefresh)
+            }
+            isPulledToRefresh -> {
+                activityMainBinding.swipeContainer.isRefreshing = false
+                Toasty.info(this, getString(R.string.no_internet_connection_message)).show()
+            }
+            else -> {
+                activityMainBinding.tvNoInternetMsg.visibility = View.VISIBLE
+                activityMainBinding.recyclerView.visibility = View.GONE
+            }
         }
     }
 
@@ -77,7 +84,10 @@ class MainActivity : AppCompatActivity() {
         mainViewModel.factsDataClassLiveDataResponseModel.observe(this) {
             when (it) {
                 is DataResult.Loading -> {
-                    activityMainBinding.progressBar.visibility = View.VISIBLE
+                    if (isPulledToLoad)
+                        activityMainBinding.progressBar.visibility = View.GONE
+                    else
+                        activityMainBinding.progressBar.visibility = View.VISIBLE
                 }
 
                 is DataResult.Success -> {
@@ -89,7 +99,7 @@ class MainActivity : AppCompatActivity() {
                             arrayList.add(row)
                     }
                     activityMainBinding.swipeContainer.isRefreshing = false
-                    adapter.setData(arrayList)
+                    mainAdapter.setData(arrayList)
                 }
 
                 is DataResult.Failure -> {
@@ -103,8 +113,8 @@ class MainActivity : AppCompatActivity() {
         val recyclerView = activityMainBinding.recyclerView
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.setHasFixedSize(true)
-        adapter.setHasStableIds(true)
-        recyclerView.adapter = adapter
+        mainAdapter.setHasStableIds(true)
+        recyclerView.adapter = mainAdapter
     }
 
 }
