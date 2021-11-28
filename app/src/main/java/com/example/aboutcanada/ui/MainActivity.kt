@@ -89,6 +89,9 @@ class MainActivity : AppCompatActivity() {
             }
             // When Internet Connection is not available
             else -> {
+                // On orientation change the visibility should not change if the live data is not null.
+                if (mainViewModel.factsDataClassLiveDataResponseModel.value != null)
+                    return
                 activityMainBinding.tvNoInternetMsg.visibility = View.VISIBLE
                 activityMainBinding.recyclerView.visibility = View.GONE
                 activityMainBinding.progressBar.visibility = View.GONE
